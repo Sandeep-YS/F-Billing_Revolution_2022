@@ -1,30 +1,22 @@
-from cgitb import text
-from distutils import command
-from itertools import count
-from pydoc import describe
-from select import select
+from errno import E2BIG
 from tkinter import *
 from tkinter import messagebox
 from tkinter import ttk
-from tkinter.tix import Select
+from unicodedata import category
 from PIL import ImageTk, Image
 import pandas as pd
 from tkinter.messagebox import showinfo
 import tkinter.scrolledtext as scrolledtext
 from tkinter.filedialog import askopenfilename
 import os
-##############################################################
-import tkinter as tk
-##############################################################
 import webbrowser
 from tkcalendar import Calendar
 from tkcalendar import DateEntry
 from datetime import date
 from tkinter import filedialog
-import subprocess
-import mysql.connector
-import io
 from models import *
+import subprocess
+import tkinter as tk
 
 def reset():
   global root
@@ -32,11 +24,9 @@ def reset():
 
 root=Tk()
 root.geometry("1360x730")
-root.resizable(False, False)
 root.title("F-Billing Revolution 2022(FREE version) | Company database:fbillingdb | User:Administrator")
 p1 = PhotoImage(file = 'images/fbicon.png')
 root.iconphoto(False, p1)
-
 
 s = ttk.Style()
 s.theme_use('default')
@@ -120,11 +110,10 @@ photo8 = PhotoImage(file = "images/refresh_E.png")
 photo9 = PhotoImage(file = "images/sum.png")
 photo10 = PhotoImage(file = "images/text-message.png")
 
-#INVOICE MODULE
 
+#######sandep###INVOICE
 
-
-#create new order
+#create new invoice
 
 def create():
   pop=Toplevel(midFrame)
@@ -265,26 +254,25 @@ def create():
     # e1=Entry(cuselection, width=20).place(x=110, y=10)
     # text=Label(cuselection, text="Filtered column").place(x=340, y=10)
     # e2=Entry(cuselection, width=20).place(x=450, y=10)
+    
+    global selectcusttree;
 
-
-    global slctcstmrtree 
-
-    slctcstmrtree=ttk.Treeview(cuselection, height=27)
-    slctcstmrtree["columns"]=["1","2","3","4"]
-    slctcstmrtree.column("#0", width=35)
-    slctcstmrtree.column("1", width=160)
-    slctcstmrtree.column("2", width=160)
-    slctcstmrtree.column("3", width=140)
-    slctcstmrtree.column("4", width=140)
-    slctcstmrtree.heading("#0",text="")
-    slctcstmrtree.heading("1",text="Customer/Ventor ID")
-    slctcstmrtree.heading("2",text="Customer/Ventor Name")
-    slctcstmrtree.heading("3",text="Tel.")
-    slctcstmrtree.heading("4",text="Contact Person")
-    slctcstmrtree.place(x=5, y=45)
+    selectcusttree=ttk.Treeview(cuselection, height=27)
+    selectcusttree["columns"]=["1","2","3","4"]
+    selectcusttree.column("#0", width=35)
+    selectcusttree.column("1", width=160)
+    selectcusttree.column("2", width=160)
+    selectcusttree.column("3", width=140)
+    selectcusttree.column("4", width=140)
+    selectcusttree.heading("#0",text="")
+    selectcusttree.heading("1",text="Customer/Ventor ID")
+    selectcusttree.heading("2",text="Customer/Ventor Name")
+    selectcusttree.heading("3",text="Tel.")
+    selectcusttree.heading("4",text="Contact Person")
+    selectcusttree.place(x=5, y=45)
 
     # def treefthcng():
-    #  itemid = slctcstmrtree.item(slctcstmrtree.focus())["values"][1]
+    #  itemid = selectcusttree.item(selectcusttree.focus())["values"][1]
     #  sql = "select * from Customer where customerid = %s"
     #  val = (itemid, )
     #  fbcursor.execute(sql, val)
@@ -301,17 +289,17 @@ def create():
     fbcursor.execute('SELECT * FROM Customer;') 
     j = 0
     for i in fbcursor:
-      slctcstmrtree.insert(parent='', index='end', iid=i, text='', values=(i[0],i[4],i[10],i[8]))
+      selectcusttree.insert(parent='', index='end', iid=i, text='', values=(i[0],i[4],i[10],i[8]))
       j += 1
 
 
-    ctegorytree=ttk.Treeview(cuselection, height=27)
-    ctegorytree["columns"]=["1"]
-    ctegorytree.column("#0", width=35, minwidth=20)
-    ctegorytree.column("1", width=205, minwidth=25, anchor=CENTER)    
-    ctegorytree.heading("#0",text="", anchor=W)
-    ctegorytree.heading("1",text="View filter by category", anchor=CENTER)
-    ctegorytree.place(x=660, y=45)
+    categtree=ttk.Treeview(cuselection, height=27)
+    categtree["columns"]=["1"]
+    categtree.column("#0", width=35, minwidth=20)
+    categtree.column("1", width=205, minwidth=25, anchor=CENTER)    
+    categtree.heading("#0",text="", anchor=W)
+    categtree.heading("1",text="View filter by category", anchor=CENTER)
+    categtree.place(x=660, y=45)
 
     scrollbar = Scrollbar(cuselection)
     scrollbar.place(x=640, y=45, height=560)
@@ -503,41 +491,45 @@ def create():
     # text=Label(newselection, text="Filtered column").place(x=340, y=10)
     # e2=Entry(newselection, width=20).place(x=450, y=10)
 
-    addcusventtree=ttk.Treeview(newselection, height=27)
-    addcusventtree["columns"]=["1","2","3", "4","5"]
-    addcusventtree.column("#0", width=35)
-    addcusventtree.column("1", width=160)
-    addcusventtree.column("2", width=160)
-    addcusventtree.column("3", width=140)
-    addcusventtree.column("4", width=70)
-    addcusventtree.column("5", width=70)
-    addcusventtree.heading("#0",text="")
-    addcusventtree.heading("1",text="ID/SKU")
-    addcusventtree.heading("2",text="Product/Service Name")
-    addcusventtree.heading("3",text="Unit price")
-    addcusventtree.heading("4",text="Service")
-    addcusventtree.heading("5",text="Stock")
-    addcusventtree.place(x=5, y=45)
+    addprodtree=ttk.Treeview(newselection, height=27)
+    addprodtree["columns"]=["1","2","3", "4","5"]
+    addprodtree.column("#0", width=35)
+    addprodtree.column("1", width=160)
+    addprodtree.column("2", width=160)
+    addprodtree.column("3", width=140)
+    addprodtree.column("4", width=70)
+    addprodtree.column("5", width=70)
+    addprodtree.heading("#0",text="")
+    addprodtree.heading("1",text="ID/SKU")
+    addprodtree.heading("2",text="Product/Service Name")
+    addprodtree.heading("3",text="Unit price")
+    addprodtree.heading("4",text="Service")
+    addprodtree.heading("5",text="Stock")
+    addprodtree.place(x=5, y=45)
 
 
     def cancelnewselection():
      newselection.destroy()
 
     def selectp1():
-        selected = addcusventtree.focus()
+        selected = addprodtree.focus()
         global valuep
-        valuep= addcusventtree.item(selected)["values"][0]
+        valuep= addprodtree.item(selected)["values"][0]
         # messagebox.showinfo("",valuep)
 
         sql = "SELECT * FROM productservice  WHERE productserviceid= %s"
         i=(valuep,)
         fbcursor.execute(sql,i)
-        
-     
+             
+        a=0
         j = 0
         for i in fbcursor:
-            tree10.insert(parent='', index='end', iid=i, text='', values=(i[0],i[4],i[5],i[7],i[13],i[8],i[10],(i[7]*i[13])))
+            tree07.insert(parent='', index='end', iid=i, text='', values=(i[0],i[3],i[4],i[6],i[12],i[7],i[9],(i[6]*i[12])))
+            for line in tree07.get_children():
+              idsave=tree07.item(line)['values'][7]
+              a+=idsave
         j += 1
+        pricecal1.config(text=a)
 
         # try:
         #   k = 0
@@ -563,19 +555,19 @@ def create():
     fbcursor.execute('SELECT * FROM Productservice;') 
     j = 0
     for i in fbcursor:
-      addcusventtree.insert(parent='', index='end', iid=i, text=' ', values=(i[0],i[4],i[7],i[12],i[13]))
+      addprodtree.insert(parent='', index='end', iid=i, text=' ', values=(i[0],i[3],i[6],i[11],i[12]))
     j += 1
 
 
 
 
-    ctegorytree=ttk.Treeview(newselection, height=27)
-    ctegorytree["columns"]=["1"]
-    ctegorytree.column("#0", width=35, minwidth=20)
-    ctegorytree.column("1", width=205, minwidth=25, anchor=CENTER)    
-    ctegorytree.heading("#0",text="", anchor=W)
-    ctegorytree.heading("1",text="View filter by category", anchor=CENTER)
-    ctegorytree.place(x=660, y=45)
+    categtree=ttk.Treeview(newselection, height=27)
+    categtree["columns"]=["1"]
+    categtree.column("#0", width=35, minwidth=20)
+    categtree.column("1", width=205, minwidth=25, anchor=CENTER)    
+    categtree.heading("#0",text="", anchor=W)
+    categtree.heading("1",text="View filter by category", anchor=CENTER)
+    categtree.place(x=660, y=45)
 
     
 
@@ -680,27 +672,13 @@ def create():
   
   #delete line item  
   def delete1():
-      selected_item = tree10.selection()[0]
+      selected_item = tree07.selection()[0]
       print=(selected_item)
-      tree10.delete(selected_item)
+      tree07.delete(selected_item)
 
-  #delete orders  
-  def dele():
-    delmess = messagebox.askyesno("Delete Invoice", "Are you sure to delete this Invoice?")
-    messagebox.showerror("F-Billing Revolution","Customer is required,please select customer before deleting line item .")
 
-    if delmess == True:
-      itemid = ordtree.item(ordtree.focus())["values"][1]
-      print(itemid,)
-      sql = 'DELETE FROM Orders WHERE orderid=%s'
-      val = (itemid,)
-      fbcursor.execute(sql, val)
-      fbilldb.commit()
-      ordtree.delete(ordtree.selection()[0])
-    else:
-      pass  
-################################################ CREATE ORDER #############################################
-  def creatingorder():
+################################################ CREATE INVOICE #############################################
+  def createinvoice():
     cmbodto=cmb.get()
     addrsfrm=addrs.get('1.0', 'end-1c')
     sptto=spt.get()
@@ -719,14 +697,20 @@ def create():
     slzprzn=salesprsn.get()
     ctgryy=ctgry.get()
 
+
+    recurring_period = month_var.get()
+    recurring_period_month = current_var.get()
+    next_invoice = recurentry1.get_date() 
+    stop_invoice = recurentry2.get_date() 
+
     ab="Draft"
 
-    # itemid1 = tree10.item(tree10.get_children())["values"][1]
+    # itemid1 = tree07.item(tree07.get_children())["values"][1]
     # print(itemid1)
 
 
-    for line in tree10.get_children():
-      idsave=tree10.item(line)['values'][0]
+    for line in tree07.get_children():
+      idsave=tree07.item(line)['values'][0]
       sql1= 'SELECT * FROM  Productservice WHERE Productserviceid = %s'
       val=(idsave,)
       print(val)
@@ -734,21 +718,42 @@ def create():
       child=fbcursor.fetchone()
       print(child)
       sql2= 'INSERT INTO storingproduct(Productserviceid,invoiceid,sku,category,name,description,status,unitprice,peices,cost,taxable,priceminuscost,serviceornot,stock,stocklimit,warehouse,privatenote) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)'
-      val1=(child[0],ordrid,child[2],child[3],child[4],child[5],child[6],child[7],child[8],child[9],child[10],child[11],child[12],child[13],child[14],child[15],child[16])
+      val1=(child[0],ordrid,child[1],child[2],child[3],child[4],child[5],child[6],child[7],child[8],child[9],child[10],child[11],child[12],child[13],child[14],child[15])
       fbcursor.execute(sql2,val1,)
       fbilldb.commit()
     
-    sql3='INSERT INTO Invoice (invoiceid, invodate, duedate, businessname, status, extracostname, extracost, template, salesper, discourate, tax1, category, businessaddress, shipname, shipaddress, cpemail, cpmobileforsms) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)'
-    val2=(ordrid,orddatein,ordduein,cmbodto,ab,extracstnme,extracst,tplts,slzprzn,discountrte,taax,ctgryy,addrsfrm,sptto,adrsto,emlfrm,smsfrm)
+    sql3='INSERT INTO Invoice (invoiceid, invodate, duedate, businessname, status, extracostname, extracost, template, salesper, discourate, tax1, category, businessaddress, shipname, shipaddress, cpemail, cpmobileforsms, recurring_period, recurring_period_month, next_invoice, stop_recurring) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)'
+    val2=(ordrid,orddatein,ordduein,cmbodto,ab,extracstnme,extracst,tplts,slzprzn,discountrte,taax,ctgryy,addrsfrm,sptto,adrsto,emlfrm,smsfrm,recurring_period,recurring_period_month,next_invoice,stop_invoice)
     fbcursor.execute(sql3,val2,)
     fbilldb.commit()
+
+    for record in invotree.get_children():
+      invotree.delete(record)
+    fbcursor.execute("select *  from invoice")
+    pandsdata = fbcursor.fetchall()
+    countp = 0
+    for i in pandsdata:
+      invotree.insert(parent='', index='end', iid=i, text='', values=('',i[0], i[2], i[3], i[18], i[4], i[5], i[6], i[7], i[8], i[9], i[10]))
+    countp += 1
+    messagebox.showinfo('Successfully Added','Successfully Added')
+    pop.destroy()
+
+
+    # sql4='INSERT INTO invoice (recurring_period, recurring_period_month, next_invoice, stop_recurring) VALUES (%s,%s,%s, %s)'
+    # val4=(recurring_period,recurring_period_month,next_invoice,stop_invoice)
+    # fbcursor.execute(sql4,val4,)
+    # fbilldb.commit()
+
+    # inv = 'SELECT invoiceid FROM invoice'
+    # print(inv)
+    
 
     # cuselection.destroy()
       # save1111=save1111.append(idsave)
       # print(save1111)
     # for i in idsave:
     #   print(idsave[i])
-      # for value in tree10.item(line)['values']:
+      # for value in tree07.item(line)['values']:
         # print(value[0])
       
 
@@ -797,7 +802,7 @@ def create():
   w = Canvas(firFrame, width=1, height=65, bg="#b3b3b3", bd=0)
   w.pack(side="left", padx=5)
 
-  create = Button(firFrame,compound="top", text="Select\nInvoice",relief=RAISED, image=customer,bg="#f5f3f2", fg="black", height=55, bd=1, width=55,command=custom)
+  create = Button(firFrame,compound="top", text="Select\nCustomer",relief=RAISED, image=customer,bg="#f5f3f2", fg="black", height=55, bd=1, width=55,command=custom)
   create.pack(side="left", pady=3, ipadx=4)
 
 
@@ -837,7 +842,7 @@ def create():
   w = Canvas(firFrame, width=1, height=65, bg="#b3b3b3", bd=0)
   w.pack(side="right", padx=5)
 
-  Createorder= Button(firFrame,compound="top", text="Save",relief=RAISED, image=tick,bg="#f5f3f2", fg="black", height=55, bd=1, width=55,command=creatingorder)
+  Createorder= Button(firFrame,compound="top", text="Save",relief=RAISED, image=tick,bg="#f5f3f2", fg="black", height=55, bd=1, width=55,command=createinvoice)
   Createorder.pack(side="right", pady=3, ipadx=4)
 
   fir1Frame=Frame(pop, height=180,bg="#f5f3f2")
@@ -869,7 +874,7 @@ def create():
 
 
   def treefthcng():
-    itemid = slctcstmrtree.item(slctcstmrtree.focus())["values"][0]
+    itemid = selectcusttree.item(selectcusttree.focus())["values"][0]
     sql = "select * from Customer where customerid = %s"
     val = (itemid, )
     fbcursor.execute(sql, val)
@@ -888,9 +893,28 @@ def create():
     smsno.insert(0, slctcstr[10])
     cuselection.destroy()
 
+  # def updaterecur():# Edit recurring values into db (user)
+  #       # itemid = rtree.item(rtree.focus())["values"][1]
+  #       recurring_period = month_var.get()
+  #       recurring_period_month = current_var.get()
+  #       next_invoice = recurentry1.get_date() 
+  #       stop_invoice = recurentry2.get_date()
+  #       sql='UPDATE invoice set recurring_period=%s,recurring_period_month=%s,next_invoice=%s,stop_recurring=%s where invoiceid=%s'
+  #       val=(recurring_period,  recurring_period_month, next_invoice, stop_invoice, itemid)
+  #       fbcursor.execute(sql,val)
+  #       fbilldb.commit()
 
+  # def insertrecur():
+  #   recurring_period = month_var.get()
+  #   recurring_period_month = current_var.get()
+  #   print(recurring_period)
+  #   next_invoice = recurentry1.get_date() 
+  #   stop_invoice = recurentry2.get_date() 
+  #   # inv = 'SELECT invoiceid FROM invoice'
+  #   # print(inv)
+  #   sql='INSERT INTO invoice (recurring_period, recurring_period_month, next_invoice, stop_recurring) VALUES (%s,%s,%s, %s)'
 
-  order = Label(labelframe1, text="Invoice to").place(x=10,y=5)
+  invoice = Label(labelframe1, text="Invoice to").place(x=10,y=5)
   cmb = ttk.Combobox(labelframe1,values=pdata,width=28)
   cmb.place(x=80,y=5)
 
@@ -916,13 +940,13 @@ def create():
   # sql1 = "select businessname from Order"
 
   # if sql == sql1:
-  #     itemid = ordtree.item(ordtree.focus())["values"][1]
+  #     itemid = invotree.item(invotree.focus())["values"][1]
   #     print(itemid,)
   #     sql = 'SELECT FROM Customer.businessaddress WHERE customerid=%s'
   #     val = (itemid,)
   #     fbcursor.execute(sql, val)
   #     fbilldb.commit()
-  #     ordtree.selection_get(ordtree.selection()[0])
+  #     invotree.selection_get(invotree.selection()[0])
   # else:
   #     pass  
 
@@ -990,8 +1014,9 @@ def create():
   terms=Label(labelframe,text="Terms").place(x=5,y=92)
   trms=ttk.Combobox(labelframe, value="",width=25)
   trms.place(x=100,y=92)
-  # ref=Label(labelframe,text="Order ref#").place(x=5,y=118)
-  # ordref=Entry(labelframe,width=27).place(x=100,y=118)
+  
+  ref=Label(labelframe,text="Order ref#").place(x=5,y=118)
+  ordref=Entry(labelframe,width=27).place(x=100,y=118)
 
   fir2Frame=Frame(pop, height=150,width=100,bg="#f5f3f2")
   fir2Frame.pack(side="top", fill=X)
@@ -999,28 +1024,30 @@ def create():
 
 
   
-  tree10=ttk.Treeview(listFrame)
-  tree10["columns"]=["1","2","3","4","5","6","7","8"]
+  tree07=ttk.Treeview(listFrame)
+  tree07["columns"]=["1","2","3","4","5","6","7","8"]
 
-  tree10.column("#0", width=40)
-  tree10.column("1", width=80)
-  tree10.column("2", width=190)
-  tree10.column("3", width=190)
-  tree10.column("4", width=80)
-  tree10.column("5", width=60)
-  tree10.column("6", width=60)
-  tree10.column("7", width=60)
-  tree10.column("8", width=80)
+  tree07.column("#0", width=40)
+  tree07.column("1", width=80)
+  tree07.column("2", width=190)
+  tree07.column("3", width=190)
+  tree07.column("4", width=80)
+  tree07.column("5", width=60)
+  tree07.column("6", width=60)
+  tree07.column("7", width=60)
+  tree07.column("8", width=80)
 
-  tree10.heading("#0")
-  tree10.heading("1",text="ID/SKU")
-  tree10.heading("2",text="Product/Service")
-  tree10.heading("3",text="Description")
-  tree10.heading("4",text="Unit Price")
-  tree10.heading("5",text="Quantity")
-  tree10.heading("6",text="Pcs/Weight")
-  tree10.heading("7",text="Tax1")
-  tree10.heading("8",text="Price")
+  tree07.heading("#0")
+  tree07.heading("1",text="ID/SKU")
+  tree07.heading("2",text="Product/Service")
+  tree07.heading("3",text="Description")
+  tree07.heading("4",text="Unit Price")
+  tree07.heading("5",text="Quantity")
+  tree07.heading("6",text="Pcs/Weight")
+  tree07.heading("7",text="Tax1")
+  tree07.heading("8",text="Price")
+  pricecal1 = Label(listFrame,bg="#f5f3f2")
+  pricecal1.place(x=850,y=200,width=78,height=18)
 
   # fbcursor.execute('SELECT * FROM Productservice;') 
   # j = 0
@@ -1029,7 +1056,7 @@ def create():
   #   j += 1
 
   
-  tree10.pack(fill="both", expand=1)
+  tree07.pack(fill="both", expand=1)
   listFrame.pack(side="top", fill="both", padx=5, pady=3, expand=1)
   
   new_value = tk.StringVar()
@@ -1071,39 +1098,39 @@ def create():
   shape1 = tk.IntVar()
   #tracks both col , row on mouse click
   def tree_click_handler(event):
-      cur_item = tree10.item(tree10.focus())
-      col = tree10.identify_column(event.x)[1:]
-      rowid = tree10.identify_row(event.y)[1:]
+      cur_item = tree07.item(tree07.focus())
+      col = tree07.identify_column(event.x)[1:]
+      rowid = tree07.identify_row(event.y)[1:]
       #updates list
       shape1.set(col)
       try:
-          x,y,w,h = tree10.bbox('I'+rowid,'#'+col)
+          x,y,w,h = tree07.bbox('I'+rowid,'#'+col)
       except:pass
       #tree.tag_configure("highlight", background="yellow")
       return(col)
 
   #code linked to event    
-  tree10.bind('<ButtonRelease-1>', tree_click_handler)
+  tree07.bind('<ButtonRelease-1>', tree_click_handler)
 
   #edit a value in a clicked cell
   def edit(event):
       try:
-          selected_item = tree10.selection()[0]
-          temp = list(tree10.item(selected_item , 'values'))
+          selected_item = tree07.selection()[0]
+          temp = list(tree07.item(selected_item , 'values'))
           tree_click_handler
           col_selected = int(shape1.get())-1
           edit_window_box(temp[col_selected])
           #do not run if edit window is open
           #use edit_window.mainloop() so value assign after window closes
           temp[col_selected] = new_value.get()
-          tree10.item(selected_item, values= temp)
+          tree07.item(selected_item, values= temp)
       except: pass
 
 
     
     
   #binding allows to edit on screen double click
-  tree10.bind('<Double-Button-1>' , edit)
+  tree07.bind('<Double-Button-1>' , edit)
 
   # sql = "SELECT * FROM productservice  WHERE productserviceid= %s"
   # i=(valuep)
@@ -1111,7 +1138,7 @@ def create():
   
   # j = 0
   # for i in fbcursor:
-  #         tree10.insert(parent='', index='end', iid=i, text='', values=(i[0], i[1], i[2], i[3], i[4],i[5], i[6], i[7], i[8], i[9]))
+  #         tree07.insert(parent='', index='end', iid=i, text='', values=(i[0], i[1], i[2], i[3], i[4],i[5], i[6], i[7], i[8], i[9]))
   # j += 1
 
   fir3Frame=Frame(pop,height=200,width=700,bg="#f5f3f2")
@@ -1121,14 +1148,18 @@ def create():
   tabStyle.theme_use('default')
   tabStyle.configure('TNotebook.Tab', background="#999999", width=12, padding=5)
   myNotebook=ttk.Notebook(fir3Frame)
-  orderFrame = Frame(myNotebook, height=200, width=800)
+  invoiceFrame = Frame(myNotebook, height=200, width=800)
+  recurFrame = Frame(myNotebook, height=200, width=800)
+  payementFrame = Frame(myNotebook, height=200, width=800)
   headerFrame = Frame(myNotebook, height=200, width=800)
   commentFrame = Frame(myNotebook, height=200, width=800)
   termsFrame = Frame(myNotebook, height=200, width=800)
   noteFrame = Frame(myNotebook, height=200, width=800)
   documentFrame = Frame(myNotebook, height=200, width=800)
   
-  myNotebook.add(orderFrame,compound="left", text="Invoice")
+  myNotebook.add(invoiceFrame,compound="left", text="Invoice")
+  myNotebook.add(recurFrame,compound="left", text="Recurring")
+  myNotebook.add(payementFrame,compound="left", text="Payements")
   myNotebook.add(headerFrame,compound="left",  text="Header/Footer")
   myNotebook.add(commentFrame,compound="left",  text="Comments")
   myNotebook.add(termsFrame,compound="left", text="Terms")
@@ -1137,12 +1168,12 @@ def create():
   myNotebook.pack(expand = 1, fill ="both") 
 
 ##
-  sql = "select extra_cost_name from Orders"
+  sql = "select extracostname from invoice"
   fbcursor.execute(sql,)
   excodata = fbcursor.fetchall()  
 ## 
 
-  labelframe1 = LabelFrame(orderFrame,text="",font=("arial",15))
+  labelframe1 = LabelFrame(invoiceFrame,text="",font=("arial",15))
   labelframe1.place(x=1,y=1,width=800,height=170)
   cost1=Label(labelframe1,text="Extra cost name").place(x=2,y=5)
   xtracstnme=ttk.Combobox(labelframe1, value=excodata,width=20)
@@ -1157,7 +1188,7 @@ def create():
   taxx=Entry(labelframe1,width=7)
   taxx.place(x=460,y=35)
 ##
-  sql = "select template from Orders"
+  sql = "select template from invoice"
   fbcursor.execute(sql,)
   tmpdata = fbcursor.fetchall()  
 ##
@@ -1236,10 +1267,102 @@ def create():
 
 
 
+  # recureframe = LabelFrame(recurFrame,text="",font=("arial",15))
+  # recureframe.place(x=1,y=1,width=800,height=170)
+  # checkvarStatus6=IntVar()
+  # recure=Checkbutton(recureframe,variable = checkvarStatus6,text="Recurring",onvalue =0 ,offvalue = 1).place(x=5,y=5)
+  # recurper=Label(recureframe,text="Recurring period(interval)").place(x=65,y=35)
+  # e2=Entry(recureframe,width=13).place(x=240,y=35)
+  # e1=ttk.Combobox(recureframe, value="",width=20).place(x=325,y=35)
+  # nextinvo=Label(recureframe,text="Next Invoice").place(x=240,y=65)
+  # e1=ttk.Combobox(recureframe, value="",width=20).place(x=325,y=65)
+  # recalc = Button(recureframe, text="Recalculate").place(x=480,y=65)
+  # checkvarStatus7=IntVar()
+  # stoprecur=Checkbutton(recureframe,variable = checkvarStatus7,text="Stop recurring after",onvalue =0 ,offvalue = 1).place(x=180,y=95)
+  # e1=ttk.Combobox(recureframe, value="",width=20).place(x=325,y=95)
+
+  global recurentry1, recurentry2,checkvarStatus6,period2, current_var, month_var
+  
+  recureframe = LabelFrame(recurFrame,text="",font=("arial",15))
+  recureframe.place(x=1,y=1,width=800,height=170)
+  checkvarStatus6=IntVar()
+  current_var = StringVar()
+  month_var = StringVar()
+  # checkvarStatus6.set(0)
+  
+  Checkbutton(recureframe,variable = checkvarStatus6,text="Recurring", offvalue=0, onvalue=1).place(x=5,y=5)
+  # Checkbutton(ws, text="accept T&C", variable=cb, onvalue=1, offvalue=0, command=isChecked).pack()
+  period=Label(recureframe,text="Recurring period(interval)").place(x=65,y=35)
+  # period1=Entry(recureframe,width=13, textvariable=month_var)
+  # period1.place(x=240,y=35)
+  period1 = Spinbox(recureframe, from_=1, to=10000, font="italic 10", width=9, text="Months(s)" ,textvariable=month_var)
+  period1.place(x=240,y=35)
+  # period1.delete(0,'end')
+  # period1.insert(0, osdata[24]) 
+  
+  # period1.delete(0,'end')
+  # period1.insert(0, psdata[20])
+                              
+  nextinvo=Label(recureframe,text="Next Invoice").place(x=240,y=65)
+  recurentry1=DateEntry(recureframe,width=20, )
+  recurentry1.place(x=325,y=65)
+  # recurentry1['state'] = DISABLED 
+  # recurentry1.delete(0,'end')
+  # recurentry1.insert(0, osdata[26].strftime('%m/%d/%y'))
+  
+  recalc = Button(recureframe, text="Recalculate")
+  recalc.place(x=490,y=65)
+
+  # saverec= Button(recureframe, text="Save" , command=insertrecur).place(x=570,y=65)
+  
+  checkvarStatus7=IntVar()
+  # checkvarStatus7.set(0)
+  stoprecur=Checkbutton(recureframe,variable = checkvarStatus7,text="Stop recurring after",onvalue =1 ,offvalue = 0).place(x=180,y=95)
+  recurentry2=DateEntry(recureframe, value="",width=20)
+  recurentry2.place(x=325,y=95)
+  # recurentry2['state'] = DISABLED 
+  # recurentry2.delete(0,'end')
+  # recurentry2.insert(0, osdata[27].strftime('%m/%d/%y'))
+  def month():
+    period2["values"] = ["Month(s)", "Days(s)"] 
+  period2=ttk.Combobox(recureframe,width=20, 
+                            values=["Month(s)", "Day(s)"],textvariable=current_var)
+  # period2=Entry(recureframe,width=13, textvariable=current_var)
+
+  period2.place(x=325,y=35)
+  period2.delete(0,'end')
+  # period2.insert(0, osdata[25])
+  # period2['state'] = DISABLED
+
+
+
+
+
+  btn1=Button(payementFrame,height=2,width=3,text="+").place(x=5,y=10)
+  btn2=Button(payementFrame,height=2,width=3,text="-").place(x=5,y=50)
+  cusventtree=ttk.Treeview(payementFrame, height=5)
+  cusventtree["columns"]=["1","2","3","4","5"]
+  cusventtree.column("#0", width=20)
+  cusventtree.column("1", width=140)
+  cusventtree.column("2", width=140)
+  cusventtree.column("3", width=110)
+  cusventtree.column("4", width=140)
+  cusventtree.column("5", width=110)
+  cusventtree.heading("#0",text="", anchor=W)
+  cusventtree.heading("1",text="Payement ID")
+  cusventtree.heading("2",text="Payement date")
+  cusventtree.heading("3",text="Paid by")
+  cusventtree.heading("4",text="Description")
+  cusventtree.heading("5",text="Amount")      
+  cusventtree.place(x=50, y=45)
+
+
+
+
 #printselected order
   
 def printsele():
-  subprocess.Popen('C:\\Windows\\System32\\spoolsv.exe')
+  # subprocess.Popen('C:\\Windows\\System32\\spoolsv.exe')
 
   def property1():
     propert=Toplevel()
@@ -1570,30 +1693,22 @@ def sms():
 def printpreview():
   messagebox.showerror("F-Billing Revolution","Customer is required,please select customer for this order before printing.")
 
-
-
-
-
-############## View/Edit Orders #############
+################EDITinvoice#############
 
 def edit():
   try:
-    itemid = ordtree.item(ordtree.focus())["values"][1]
+    itemid = invotree.item(invotree.focus())["values"][1]
   # sql = "select * from Orders where orderid = %s"
   # val = (itemid, )
   # fbcursor.execute(sql, val)
   # osdata = fbcursor.fetchone()
 
-  # # itemid = ordtree.item(ordtree.focus())["values"][1]
+  # # itemid = invotree.item(invotree.focus())["values"][1]
   # sql = "select * from Orders where orderid = %s"
   # # val = (itemid, )
   # fbcursor.execute(sql,)
   # psdata = fbcursor.fetchone()
   # print(psdata)
-
-
-
-    
 
         
     pop=Toplevel(midFrame)
@@ -1756,13 +1871,13 @@ def edit():
     
 
 
-      ctegorytree=ttk.Treeview(cuselection, height=27)
-      ctegorytree["columns"]=["1"]
-      ctegorytree.column("#0", width=35, minwidth=20)
-      ctegorytree.column("1", width=205, minwidth=25, anchor=CENTER)    
-      ctegorytree.heading("#0",text="", anchor=W)
-      ctegorytree.heading("1",text="View filter by category", anchor=CENTER)
-      ctegorytree.place(x=660, y=45)
+      categtree=ttk.Treeview(cuselection, height=27)
+      categtree["columns"]=["1"]
+      categtree.column("#0", width=35, minwidth=20)
+      categtree.column("1", width=205, minwidth=25, anchor=CENTER)    
+      categtree.heading("#0",text="", anchor=W)
+      categtree.heading("1",text="View filter by category", anchor=CENTER)
+      categtree.place(x=660, y=45)
 
       scrollbar = Scrollbar(cuselection)
       scrollbar.place(x=640, y=45, height=560)
@@ -1956,36 +2071,51 @@ def edit():
       # text=Label(newselection, text="Filtered column").place(x=340, y=10)
       # e2=Entry(newselection, width=20).place(x=450, y=10)
 
-      edtcusventtree=ttk.Treeview(newselection, height=27)
-      edtcusventtree["columns"]=["1","2","3", "4","5"]
-      edtcusventtree.column("#0", width=35)
-      edtcusventtree.column("1", width=160)
-      edtcusventtree.column("2", width=160)
-      edtcusventtree.column("3", width=140)
-      edtcusventtree.column("4", width=70)
-      edtcusventtree.column("5", width=70)
-      edtcusventtree.heading("#0",text="")
-      edtcusventtree.heading("1",text="ID/SKU")
-      edtcusventtree.heading("2",text="Product/Service Name")
-      edtcusventtree.heading("3",text="Unit price")
-      edtcusventtree.heading("4",text="Service")
-      edtcusventtree.heading("5",text="Stock")
-      edtcusventtree.place(x=5, y=45)
+      editprodtree=ttk.Treeview(newselection, height=27)
+      editprodtree["columns"]=["1","2","3", "4","5"]
+      editprodtree.column("#0", width=35)
+      editprodtree.column("1", width=160)
+      editprodtree.column("2", width=160)
+      editprodtree.column("3", width=140)
+      editprodtree.column("4", width=70)
+      editprodtree.column("5", width=70)
+      editprodtree.heading("#0",text="")
+      editprodtree.heading("1",text="ID/SKU")
+      editprodtree.heading("2",text="Product/Service Name")
+      editprodtree.heading("3",text="Unit price")
+      editprodtree.heading("4",text="Service")
+      editprodtree.heading("5",text="Stock")
+      editprodtree.place(x=5, y=45)
 
       def cancelnewselection():
        newselection.destroy()
-      global prstree
-      def selectp1():
-          selected = edtcusventtree.focus()
-          global valuep,prstree
-          valuep= edtcusventtree.item(selected)["values"][0]
-          sql = "SELECT * FROM productservice  WHERE productserviceid= %s"
+      
+      def selectp2():
+          selected = editprodtree.focus()
+          global valuep,ttlp
+          valuep= editprodtree.item(selected)["values"][0]
+          sql = "SELECT * FROM productservice  WHERE sku= %s"
           i=(valuep,)
           fbcursor.execute(sql,i)
+          ttlp=0
           j = 0
           for i in fbcursor:
-           vwedttree1.insert(parent='', index='end', iid=i, text='', values=(i[2],i[4],i[5],i[7],i[13],i[8],i[10],(i[7]*i[13])))
-          j += 1
+           viewditree.insert(parent='', index='end', iid=i, text='', values=(i[8],i[3],i[6],i[7],i[13],i[8],i[10],(i[7]*i[13])))
+           for line in viewditree.get_children():
+              idsave1=viewditree.item(line)['values'][7]
+              ttlp+=idsave1
+              j += 1
+          priceco0.config(text=ttlp)
+          valu10= editprodtree.item(selected)["values"][0]
+          sqllll = "SELECT * FROM productservice  WHERE sku= %s"
+          r=(valu10,)
+          fbcursor.execute(sqllll,r)
+          child=fbcursor.fetchone()
+
+          sql21= 'INSERT INTO storingproduct(Productserviceid,invoiceid,sku,category,name,description,status,unitprice,peices,cost,taxable,priceminuscost,serviceornot,stock,stocklimit,warehouse,privatenote) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)'
+          vatree=(child[0],osdata[0],child[1],child[2],child[3],child[4],child[5],child[6],child[7],child[8],child[9],child[10],child[11],child[12],child[13],child[14],child[15])
+          fbcursor.execute(sql21,vatree,)
+          fbilldb.commit()    
 
           newselection.destroy()
 
@@ -2015,19 +2145,19 @@ def edit():
       fbcursor.execute('SELECT * FROM Productservice;') 
       j = 0
       for i in fbcursor:
-        edtcusventtree.insert(parent='', index='end', iid=i, text=' ', values=(i[2],i[4],i[7],i[12],i[13]))
+        editprodtree.insert(parent='', index='end', iid=i, text=' ', values=(i[1],i[4],i[7],i[12],i[13]))
       j += 1
   
   
 
 
-      ctegorytree=ttk.Treeview(newselection, height=27)
-      ctegorytree["columns"]=["1"]
-      ctegorytree.column("#0", width=35, minwidth=20)
-      ctegorytree.column("1", width=205, minwidth=25, anchor=CENTER)    
-      ctegorytree.heading("#0",text="", anchor=W)
-      ctegorytree.heading("1",text="View filter by category", anchor=CENTER)
-      ctegorytree.place(x=660, y=45)
+      categtree=ttk.Treeview(newselection, height=27)
+      categtree["columns"]=["1"]
+      categtree.column("#0", width=35, minwidth=20)
+      categtree.column("1", width=205, minwidth=25, anchor=CENTER)    
+      categtree.heading("#0",text="", anchor=W)
+      categtree.heading("1",text="View filter by category", anchor=CENTER)
+      categtree.place(x=660, y=45)
 
       
 
@@ -2036,7 +2166,7 @@ def edit():
       scrollbar.config( command=tree.yview )
     
 
-      btn1=Button(newselection,compound = LEFT,image=tick ,text="ok",command=selectp1,width=60).place(x=15, y=610)
+      btn1=Button(newselection,compound = LEFT,image=tick ,text="ok",command=selectp2,width=60).place(x=15, y=610)
       btn1=Button(newselection,compound = LEFT,image=tick , text="Edit product/Service", width=150,command=product).place(x=250, y=610)
       btn1=Button(newselection,compound = LEFT,image=tick , text="Add product/Service", width=150,command=product).place(x=435, y=610)
       btn1=Button(newselection,compound = LEFT,image=cancel ,text="Cancel", width=60,command=cancelnewselection).place(x=740, y=610)
@@ -2131,9 +2261,18 @@ def edit():
     
     #delete line item  
     def delete2():
-      selected_item = vwedttree1.selection()[0]
-      print=(selected_item)
-      vwedttree1.delete(selected_item) 
+      # selected_item = viewditree.selection()[0]
+      # print=(selected_item)
+      # viewditree.delete(selected_item)
+      itemid = viewditree.item(viewditree.focus())["values"][0]
+      print(itemid,)
+      dlting=osdata[0]
+      sql = 'DELETE FROM storingproduct WHERE invoiceid=%s AND Productserviceid=%s'
+      val = (dlting,itemid,)
+      fbcursor.execute(sql, val)
+      fbilldb.commit()
+      viewditree.delete(viewditree.selection()[0]) 
+      
   except:
     try:
       pop.destroy()
@@ -2147,16 +2286,16 @@ def edit():
     messagebox.showerror("F-Billing Revolution","Customer is required,please select customer before deleting line item .")
 
     if delmess == True:
-      itemid = ordtree.item(ordtree.focus())["values"][1]
+      itemid = invotree.item(invotree.focus())["values"][1]
       print(itemid,)
       sql = 'DELETE FROM invoice WHERE invoiceid=%s'
       val = (itemid,)
       fbcursor.execute(sql, val)
       fbilldb.commit()
-      ordtree.delete(ordtree.selection()[0])
+      invotree.delete(invotree.selection()[0])
     else:
       pass  
-######################################## UPDATING ORDER ##############################################
+######################################## UPDATING invoice ##############################################
   def updateorder():
     cmbodto=cmb1.get()
     addrsfrm=addrs1.get('1.0', 'end-1c')
@@ -2178,9 +2317,14 @@ def edit():
     bc="Draft"
     idorder= osdata[0]
 
+    recurring_period = month_var.get()
+    recurring_period_month = current_var.get()
+    next_invoice = recurentry1.get_date() 
+    stop_invoice = recurentry2.get_date() 
 
-    for line in vwedttree1.get_children():
-      idsave=vwedttree1.item(line)['values'][0]
+
+    for line in viewditree.get_children():
+      idsave=viewditree.item(line)['values'][0]
       sql1= 'SELECT * FROM  Productservice WHERE Productserviceid = %s'
       val=(idsave,)
       print(val)
@@ -2192,11 +2336,20 @@ def edit():
       # fbcursor.execute(sql2,val1,)
       # fbilldb.commit()
 
-    sql3='UPDATE Orders SET orderid=%s,order_date=%s,due_date=%s,businessname=%s,status=%s,extra_cost_name=%s,extra_cost=%s,template=%s,sales_person=%s,discount_rate=%s,tax1=%s,category=%s,businessaddress=%s,shipname=%s,shipaddress=%s,cpemail=%s,cpmobileforsms=%s WHERE orderid=%s'
+    sql3='UPDATE invoice SET invoiceid=%s,invodate=%s,duedate=%s,businessname=%s,status=%s,extracostname=%s,extracost=%s,template=%s,salesper=%s,discourate=%s,tax1=%s,category=%s,businessaddress=%s,shipname=%s,shipaddress=%s,cpemail=%s,cpmobileforsms=%s WHERE invoiceid=%s'
     val2=(ordrid,orddatein,ordduein,cmbodto,bc,extracstnme,extracst,tplts,slzprzn,discountrte,taax,ctgryy,addrsfrm,sptto,adrsto,emlfrm,smsfrm,idorder)
     fbcursor.execute(sql3,val2,)
     fbilldb.commit()
 
+    for record in invotree.get_children():
+      invotree.delete(record)
+    fbcursor.execute("select *  from invoice")
+    pandsdata = fbcursor.fetchall()
+    countp = 0
+    for i in pandsdata:
+      invotree.insert(parent='', index='end', iid=i, text='', values=('',i[0], i[2], i[3], i[18], i[4], i[5], i[6], i[7], i[8], i[9], i[10]))
+    countp += 1
+    messagebox.showinfo('Successfully Added','Successfully Added')
       
     
 
@@ -2289,7 +2442,7 @@ def edit():
   fbcursor.execute(sql,)
   pdata = fbcursor.fetchall()
 ##
-  itemid = ordtree.item(ordtree.focus())["values"][1]
+  itemid = invotree.item(invotree.focus())["values"][1]
   sql = "select * from Invoice where Invoiceid = %s"
   val = (itemid, )
   fbcursor.execute(sql, val)
@@ -2301,28 +2454,28 @@ def edit():
   cmb1 = ttk.Combobox(labelframe1,values=pdata,width=28)
   cmb1.place(x=80,y=5)
   cmb1.delete(0,'end')
-  cmb1.insert(0, osdata[3])
+  cmb1.insert(0, osdata[18])
 
   address=Label(labelframe1,text="Address").place(x=10,y=30)
   # e2=scrolledtext(labelframe1,width=23).place(x=80,y=30,height=70)
   addrs1 = scrolledtext.Text(labelframe1, undo=True,width=23)
   addrs1.place(x=80,y=30,height=70)
   addrs1.delete('1.0','end')
-  addrs1.insert("1.0", osdata[16])
+  addrs1.insert("1.0", osdata[19])
   
   ship=Label(labelframe1,text="Ship to").place(x=342,y=5)
   #e3=Entry(labelframe1,width=30).place(x=402,y=3)
   spt1 = scrolledtext.Text(labelframe1, undo=True,width=23)
   spt1.place(x=402,y=3)
   spt1.delete('1.0','end')
-  spt1.insert("1.0", osdata[17])
+  spt1.insert("1.0", osdata[20])
 
   address1=Label(labelframe1,text="Address").place(x=340,y=30)
   # e4=Text(labelframe1,width=23).place(x=402,y=30,height=70)
   adrs = scrolledtext.Text(labelframe1, undo=True,width=23)
   adrs.place(x=402,y=30,height=70)
   adrs.delete('1.0','end')
-  adrs.insert("1.0", osdata[18])
+  adrs.insert("1.0", osdata[21])
 
   btn1=Button(labelframe1,width=3,height=2,compound = LEFT,text=">>").place(x=290, y=48)
   
@@ -2334,7 +2487,7 @@ def edit():
   eml = scrolledtext.Text(labelframe2, undo=True,width=23)
   eml.place(x=80,y=5,height=25)
   eml.delete('1.0','end')
-  eml.insert("1.0", osdata[19])
+  eml.insert("1.0", osdata[22])
 
 
   sms=Label(labelframe2,text="SMS No.").place(x=340,y=5)
@@ -2342,7 +2495,7 @@ def edit():
   smsno = scrolledtext.Text(labelframe2, undo=True,width=23)
   smsno.place(x=402,y=5,height=25)
   smsno.delete('1.0','end')
-  smsno.insert("1.0", osdata[20])
+  smsno.insert("1.0", osdata[23])
     
   labelframe = LabelFrame(fir1Frame,text="Invoice",font=("arial",15))
   labelframe.place(x=652,y=5,width=290,height=170)
@@ -2360,7 +2513,7 @@ def edit():
   # sctxt = scrolledtext.Text(labelframe, undo=True,width=15)
   # sctxt.place(x=150,y=33,height=22)
   e2.delete(0,'end')
-  e2.insert(0, osdata[1].strftime('%d/%m/%y'))
+  e2.insert(0, osdata[2])
 
   checkvarStatus5=IntVar()
   duedate=Checkbutton(labelframe,variable = checkvarStatus5,text="Due date",onvalue =0 ,offvalue = 1).place(x=5,y=62)
@@ -2370,7 +2523,7 @@ def edit():
   # sctxt = scrolledtext.Text(labelframe, undo=True,width=15)
   # sctxt.place(x=150,y=63,height=22)
   e3.delete(0,'end')
-  e3.insert(0, osdata[2].strftime('%d/%m/%y'))
+  e3.insert(0, osdata[3])
 
 
 
@@ -2380,47 +2533,50 @@ def edit():
 
 
 
-  # ref=Label(labelframe,text="Order ref#").place(x=5,y=118)
-  # e1=Entry(labelframe,width=27).place(x=100,y=118)
+  ref=Label(labelframe,text="Order ref#").place(x=5,y=118)
+  e1=Entry(labelframe,width=27).place(x=100,y=118)
 
   fir2Frame=Frame(pop, height=150,width=100,bg="#f5f3f2")
   fir2Frame.pack(side="top", fill=X)
   listFrame = Frame(fir2Frame, bg="white", height=140,borderwidth=5,  relief=RIDGE)
 
 
-  vwedttree1=ttk.Treeview(listFrame, show = "headings")
-  vwedttree1.pack(side = 'top')
-  vwedttree1["columns"]=["1","2","3","4","5","6","7","8"]
-  vwedttree1.column("#0", width=40)
-  vwedttree1.column("1", width=80)
-  vwedttree1.column("2", width=190)
-  vwedttree1.column("3", width=190)
-  vwedttree1.column("4", width=80)
-  vwedttree1.column("5", width=60)
-  vwedttree1.column("6", width=60)
-  vwedttree1.column("7", width=60)
-  vwedttree1.column("8", width=80)
+  viewditree=ttk.Treeview(listFrame, show = "headings")
+  viewditree.pack(side = 'top')
+  viewditree["columns"]=["1","2","3","4","5","6","7","8"]
+  viewditree.column("#0", width=40)
+  viewditree.column("1", width=80)
+  viewditree.column("2", width=190)
+  viewditree.column("3", width=190)
+  viewditree.column("4", width=80)
+  viewditree.column("5", width=60)
+  viewditree.column("6", width=60)
+  viewditree.column("7", width=60)
+  viewditree.column("8", width=80)
  
-  vwedttree1.heading("#0")
-  vwedttree1.heading("1",text="ID/SKU")
-  vwedttree1.heading("2",text="Product/Service")
-  vwedttree1.heading("3",text="Description")
-  vwedttree1.heading("4",text="Unit Price")
-  vwedttree1.heading("5",text="Quantity")
-  vwedttree1.heading("6",text="Pcs/Weight")
-  vwedttree1.heading("7",text="Tax1")
-  vwedttree1.heading("8",text="Price")
-  pricecol = Label(listFrame, text="100",bg="#f5f3f2").place(x=850,y=200,width=78,height=18)
-  pricecol = Entry(listFrame,width=28)
+  viewditree.heading("#0")
+  viewditree.heading("1",text="ID/SKU")
+  viewditree.heading("2",text="Product/Service")
+  viewditree.heading("3",text="Description")
+  viewditree.heading("4",text="Unit Price")
+  viewditree.heading("5",text="Quantity")
+  viewditree.heading("6",text="Pcs/Weight")
+  viewditree.heading("7",text="Tax1")
+  viewditree.heading("8",text="Price")
+  priceco0 = Label(listFrame,bg="#f5f3f2").place(x=850,y=200,width=78,height=18)
+  priceco0 = Entry(listFrame,width=28)
 
   ba=osdata[0]
   sql4='SELECT * FROM storingproduct WHERE invoiceid=%s'
   val10=(ba,)
   fbcursor.execute(sql4,val10)
+  ttlp=0
   j = 0
   for i in fbcursor:
-    vwedttree1.insert(parent='', index='end', iid=i, text='', values=(i[4], i[6], i[7], i[9], i[15],i[10],i[12],(i[9]*i[15])))
-  j += 1
+    viewditree.insert(parent='', index='end', iid=i, text='', values=(i[6],i[8],i[9],i[11],i[17],i[12],i[14],(i[11]*i[17])))
+    ttlp+=(i[11]*i[17])
+    j += 1
+  priceco0.config(text=ttlp)
 
   # def pricetotal():
   #   fbcursor.execute('SELECT * FROM Productservice;')
@@ -2431,7 +2587,7 @@ def edit():
 
   
 
-  vwedttree1.pack(fill="both", expand=1)
+  viewditree.pack(fill="both", expand=1)
   listFrame.pack(side="top", fill="both", padx=5, pady=3, expand=1)
   
 
@@ -2459,18 +2615,39 @@ def edit():
     
     def value_assignment(event):
         printing = edit_box.get()
+        # print(printing)
+        indexcolaa=int(indexcol)-1
         new_value.set(printing)
+        print(indexcol)
         #only destroy will not update the value (perhaps event keeps running in background)
         #quit allows event to stop n update value in tree but does not close the window in single click 
         #rather on dbl click shuts down entire app 
+
+        selected0 = viewditree.focus()
+        valuz1= viewditree.item(selected0)["values"]
+        idgettingprdt=valuz1[0]
+        valuz1[indexcolaa]=printing
+        print(valuz1)
+
+        sql2z0= 'UPDATE storingproduct SET sku=%s,name=%s,description=%s,unitprice=%s,stock=%s,peices=%s,taxable=%s WHERE invoiceid=%s AND sku=%s'
+        val0z1=(valuz1[0],valuz1[1],valuz1[2],valuz1[3],valuz1[4],valuz1[5],valuz1[6],osdata[0],idgettingprdt)
+        # dnz=(ordrid,sql2z0,)
+        print(val0z1)
+
+        fbcursor.execute(sql2z0,val0z1)
+        fbilldb.commit()
+
         edit_window.quit()
         edit_window.destroy()
     
     edit_window.bind('<Return>', value_assignment )
+    
+
 
     B1 = tk.Button(edit_window, text=" Okay ")
     B1.bind('<Button-1>',value_assignment)
     B1.place(x=70,y=130)
+    
     
     B2 = tk.Button(edit_window, text="Cancel", command = edit_window.destroy).place(x=276,y=130)
     edit_window.mainloop()
@@ -2480,36 +2657,40 @@ def edit():
   shape1 = tk.IntVar()
   #tracks both col , row on mouse click
   def tree_click_handler(event):
-      cur_item = vwedttree1.item(vwedttree1.focus())
-      col = vwedttree1.identify_column(event.x)[1:]
-      rowid = vwedttree1.identify_row(event.y)[1:]
+      cur_item = viewditree.item(viewditree.focus())
+      # print(cur_item)
+      global indexcol
+      indexcol = viewditree.identify_column(event.x)[1:]
+      rowid = viewditree.identify_row(event.y)[1:]
+      # print(indexcol)
+      # print(rowid)
       #updates list
-      shape1.set(col)
+      shape1.set(indexcol)
       try:
-          x,y,w,h = vwedttree1.bbox('I'+rowid,'#'+col)
+          x,y,w,h = viewditree.bbox('I'+rowid,'#'+indexcol)
       except:pass
       #tree.tag_configure("highlight", background="yellow")
-      return(col)
+      return(indexcol)
 
   #code linked to event    
-  vwedttree1.bind('<ButtonRelease-1>', tree_click_handler)
+  viewditree.bind('<ButtonRelease-1>', tree_click_handler)
 
   #edit a value in a clicked cell
   def edit(event):
       try:
-          selected_item = vwedttree1.selection()[0]
-          temp = list(vwedttree1.item(selected_item , 'values'))
+          selected_item = viewditree.selection()[0]
+          temp = list(viewditree.item(selected_item , 'values'))
           tree_click_handler
           col_selected = int(shape1.get())-1
           edit_window_box(temp[col_selected])
           #do not run if edit window is open
           #use edit_window.mainloop() so value assign after window closes
           temp[col_selected] = new_value.get()
-          vwedttree1.item(selected_item, values= temp)
+          viewditree.item(selected_item, values= temp)
           # prstree.insert(prstree.selection()[0])
       except: pass
   #binding allows to edit on screen double click
-  vwedttree1.bind('<Double-Button-1>' , edit)
+  viewditree.bind('<Double-Button-1>' , edit)
 
 
   fir3Frame=Frame(pop,height=200,width=700,bg="#f5f3f2")
@@ -2519,14 +2700,18 @@ def edit():
   tabStyle.theme_use('default')
   tabStyle.configure('TNotebook.Tab', background="#999999", width=12, padding=5)
   myNotebook=ttk.Notebook(fir3Frame)
-  orderFrame = Frame(myNotebook, height=200, width=800)
+  invoiceFrame = Frame(myNotebook, height=200, width=800)
+  recurFrame = Frame(myNotebook, height=200, width=800)
+  payementFrame = Frame(myNotebook, height=200, width=800)
   headerFrame = Frame(myNotebook, height=200, width=800)
   commentFrame = Frame(myNotebook, height=200, width=800)
   termsFrame = Frame(myNotebook, height=200, width=800)
   noteFrame = Frame(myNotebook, height=200, width=800)
   documentFrame = Frame(myNotebook, height=200, width=800)
   
-  myNotebook.add(orderFrame,compound="left", text="Invoice")
+  myNotebook.add(invoiceFrame,compound="left", text="Invoice")
+  myNotebook.add(recurFrame,compound="left", text="Recurring")
+  myNotebook.add(payementFrame,compound="left", text="Payements")
   myNotebook.add(headerFrame,compound="left",  text="Header/Footer")
   myNotebook.add(commentFrame,compound="left",  text="Comments")
   myNotebook.add(termsFrame,compound="left", text="Terms")
@@ -2534,47 +2719,49 @@ def edit():
   myNotebook.add(documentFrame,compound="left",  text="Documents")
   myNotebook.pack(expand = 1, fill ="both")  
 
+
+
 ##
   sql = "select extracostname from invoice"
   fbcursor.execute(sql,)
   exdata = fbcursor.fetchall()  
 ##
-  itemid = ordtree.item(ordtree.focus())["values"][1]
+  itemid = invotree.item(invotree.focus())["values"][1]
   sql = "select * from invoice where invoiceid = %s"
   val = (itemid, )
   fbcursor.execute(sql, val)
   orbtdata = fbcursor.fetchone()
 ##
 
-  labelframe1 = LabelFrame(orderFrame,text="",font=("arial",15))
+  labelframe1 = LabelFrame(invoiceFrame,text="",font=("arial",15))
   labelframe1.place(x=1,y=1,width=800,height=170)
 
   cost1=Label(labelframe1,text="Extra cost name").place(x=2,y=5)
   xtracstnme=ttk.Combobox(labelframe1, value=exdata,width=20)
   xtracstnme.place(x=115,y=5)
   xtracstnme.delete(0,'end')
-  xtracstnme.insert(0, orbtdata[9])
+  xtracstnme.insert(0, orbtdata[11])
 
 
   rate=Label(labelframe1,text="Discount rate").place(x=370,y=5)
   dscntrte=Spinbox(labelframe1,width=6,  from_=0, to=100, font="italic 10")
   dscntrte.place(x=460,y=5)
   dscntrte.delete(0,'end')
-  dscntrte.insert(0, orbtdata[13])
+  dscntrte.insert(0, orbtdata[15])
 
 
   cost2=Label(labelframe1,text="Extra cost").place(x=35,y=35)
   xtracst=Entry(labelframe1,width=10)
   xtracst.place(x=115,y=35)
   xtracst.delete(0,'end')
-  xtracst.insert(0, orbtdata[10])
+  xtracst.insert(0, orbtdata[12])
 
 
   tax=Label(labelframe1,text="Tax1").place(x=420,y=35)
   taxx=Entry(labelframe1,width=7)
   taxx.place(x=460,y=35)
   taxx.delete(0,'end')
-  taxx.insert(0, orbtdata[14])
+  taxx.insert(0, orbtdata[16])
 
 ##
   sql = "select template from invoice"
@@ -2588,7 +2775,7 @@ def edit():
   tmplte=ttk.Combobox(labelframe1, value=tmpltdata,width=25)
   tmplte.place(x=115,y=70)
   tmplte.delete(0,'end')
-  tmplte.insert(0, orbtdata[11])
+  tmplte.insert(0, orbtdata[13])
 
 
 
@@ -2596,33 +2783,33 @@ def edit():
   salesprsn=Entry(labelframe1,width=18)
   salesprsn.place(x=115,y=100)
   salesprsn.delete(0,'end')
-  salesprsn.insert(0, orbtdata[12])
+  salesprsn.insert(0, orbtdata[14])
 
 
   category=Label(labelframe1,text="Category").place(x=300,y=100)
   ctgry=Entry(labelframe1,width=22)
   ctgry.place(x=370,y=100)
   ctgry.delete(0,'end')
-  ctgry.insert(0, orbtdata[15])
+  ctgry.insert(0, orbtdata[17])
   
   statusfrme = LabelFrame(labelframe1,text="Status",font=("arial",15))
   statusfrme.place(x=540,y=0,width=160,height=160)
 ##
-  itemid = ordtree.item(ordtree.focus())["values"][1]
+  itemid = invotree.item(invotree.focus())["values"][1]
   sql = "select status from invoice where invoiceid = %s"
   val = (itemid, )
   fbcursor.execute(sql, val)
   drftinvc = fbcursor.fetchone()
 ##
 ##
-  itemid = ordtree.item(ordtree.focus())["values"][1]
+  itemid = invotree.item(invotree.focus())["values"][1]
   sql = "select emailon from invoice where invoiceid = %s"
   val = (itemid, )
   fbcursor.execute(sql, val)
   emldon = fbcursor.fetchone()
 ##
 ##
-  itemid = ordtree.item(ordtree.focus())["values"][1]
+  itemid = invotree.item(invotree.focus())["values"][1]
   sql = "select printon from invoice where invoiceid = %s"
   val = (itemid, )
   fbcursor.execute(sql, val)
@@ -2635,6 +2822,146 @@ def edit():
   nev1=Label(statusfrme, text=emldon).place(x=100,y=50)
   on2=Label(statusfrme, text="Printed on:").place( y=90)
   nev2=Label(statusfrme, text=prntdon).place(x=98,y=90)
+
+  def isChecked():
+      if checkvarStatus6.get()==0:
+        recurentry1['state'] = DISABLED 
+        # recurentry2['state'] = DISABLED  
+        period2['state'] = DISABLED
+        #  month_var['state'] = DISABLED
+      else:
+          recurentry1['state'] = NORMAL
+          # recurentry2['state'] = NORMAL
+          period2['state'] = NORMAL
+
+  def stopcheck():
+      if checkvarStatus7.get()==0:
+        recurentry2['state'] = DISABLED  
+      else:
+          recurentry2['state'] = NORMAL 
+
+  # def duecheck():
+  #     if checkvarStatus5.get()==0:
+  #       invduedate['state'] = DISABLED  
+  #     else:
+  #       invduedate['state'] = NORMAL  
+  
+  # def dueChecked():
+  #     if checkvarStatus5.get()==0:
+  #       e3['state'] = DISABLED  
+  #     else:
+  #       e3['state'] = NORMAL
+
+
+
+  def recalculator():  
+    date_1 = e2.get_date()
+    print(date_1)
+
+    if period2.get() == "Month(s)":
+      end_date = date_1 + date.timedelta(3*365/12)  
+    elif period2.get() == "Day(s)":
+      end_date = date_1 + date.timedelta(days=int(period1.get()))
+
+
+    print(end_date)
+    recurentry1.delete(0,'end')
+    recurentry1.insert(0, end_date.strftime('%m/%d/%y'))
+    # recurentry2.config(f"ndate: {end_date.strftime('%m/%d/%Y')}") 
+
+  def updaterecur():# Edit recurring values into db (user)
+    itemid = invotree.item(invotree.focus())["values"][1]
+    recurring_period = month_var.get()
+    recurring_period_month = current_var.get()
+    next_invoice = recurentry1.get_date() 
+    stop_invoice = recurentry2.get_date()
+    sql='UPDATE invoice set recurring_period=%s,recurring_period_month=%s,next_invoice=%s,stop_recurring=%s where invoiceid=%s'
+    val=(recurring_period,  recurring_period_month, next_invoice, stop_invoice, itemid)
+    fbcursor.execute(sql,val)
+    fbilldb.commit()
+
+  
+  #------------------------------recurring edit ---------------------------------------------
+    # itemid = tree.item(tree.focus())["values"][]
+    # sql = "select * from invoice where invoiceid = %s"
+    # val = (itemid, )
+    # fbcursor.execute(sql, val)
+    # psdata = fbcursor.fetchone()
+
+  #-----------------------------------------------------------------
+  global recurentry1, recurentry2,checkvarStatus6,period2, current_var, month_var
+  recureframe = LabelFrame(recurFrame,text="",font=("arial",15))
+  recureframe.place(x=1,y=1,width=800,height=170)
+  checkvarStatus6=IntVar()
+  current_var = StringVar()
+  month_var = StringVar()
+  checkvarStatus6.set(0)
+    
+  Checkbutton(recureframe,variable = checkvarStatus6,text="Recurring", offvalue=0, onvalue=1, command=isChecked).place(x=5,y=5)
+  # Checkbutton(ws, text="accept T&C", variable=cb, onvalue=1, offvalue=0, command=isChecked).pack()
+  period=Label(recureframe,text="Recurring period(interval)").place(x=65,y=35)
+  # period1=Entry(recureframe,width=13, textvariable=month_var)
+  # period1.place(x=240,y=35)
+  period1 = Spinbox(recureframe, from_=1, to=10000, font="italic 10", width=9, text="Months(s)" ,textvariable=month_var)
+  period1.place(x=240,y=35)
+  period1.delete(0,'end')
+  period1.insert(0, osdata[24]) 
+    
+  # period1.delete(0,'end')
+  # period1.insert(0, psdata[20])
+                              
+  nextinvo=Label(recureframe,text="Next Invoice").place(x=240,y=65)
+  recurentry1=DateEntry(recureframe,width=20, )
+  recurentry1.place(x=325,y=65)
+  recurentry1['state'] = DISABLED 
+  recurentry1.delete(0,'end')
+  recurentry1.insert(0, osdata[26].strftime('%m/%d/%y'))
+    
+
+  recalc = Button(recureframe, text="Recalculate", command=recalculator)
+  recalc.place(x=490,y=65)
+
+  saverec= Button(recureframe, text="Save" , command=updaterecur).place(x=570,y=65)
+  
+  checkvarStatus7=IntVar()
+  checkvarStatus7.set(0)
+  stoprecur=Checkbutton(recureframe,variable = checkvarStatus7,text="Stop recurring after",onvalue =1 ,offvalue = 0, command=stopcheck).place(x=180,y=95)
+  recurentry2=DateEntry(recureframe, value="",width=20)
+  recurentry2.place(x=325,y=95)
+  recurentry2['state'] = DISABLED 
+  recurentry2.delete(0,'end')
+  recurentry2.insert(0, osdata[27].strftime('%m/%d/%y'))
+
+  def month():
+    period2["values"] = ["Month(s)", "Days(s)"] 
+  period2=ttk.Combobox(recureframe,width=20, 
+                            values=["Month(s)", "Day(s)"],textvariable=current_var)
+  # period2=Entry(recureframe,width=13, textvariable=current_var)
+
+  period2.place(x=325,y=35)
+  period2.delete(0,'end')
+  period2.insert(0, osdata[25])
+  period2['state'] = DISABLED 
+
+
+  btn1=Button(payementFrame,height=2,width=3,text="+").place(x=5,y=10)
+  btn2=Button(payementFrame,height=2,width=3,text="-").place(x=5,y=50)
+  cusventtree=ttk.Treeview(payementFrame, height=5)
+  cusventtree["columns"]=["1","2","3","4","5"]
+  cusventtree.column("#0", width=20)
+  cusventtree.column("1", width=140)
+  cusventtree.column("2", width=140)
+  cusventtree.column("3", width=110)
+  cusventtree.column("4", width=140)
+  cusventtree.column("5", width=110)
+  cusventtree.heading("#0",text="", anchor=W)
+  cusventtree.heading("1",text="Payement ID")
+  cusventtree.heading("2",text="Payement date")
+  cusventtree.heading("3",text="Paid by")
+  cusventtree.heading("4",text="Description")
+  cusventtree.heading("5",text="Amount")      
+  cusventtree.place(x=50, y=45)
+
 
   text1=Label(headerFrame,text="Title text").place(x=50,y=5)
   e1=ttk.Combobox(headerFrame, value="",width=60).place(x=125,y=5)
@@ -2676,7 +3003,7 @@ def edit():
   discount1=Label(summaryfrme,text="$0.00").place(x=130 ,y=0)
   # def my_values_cal():
   #   sum1 = 0.0
-  #   for Price in vwedttree1.get_Price():
+  #   for Price in viewditree.get_Price():
   #       sum1 += float(tree.item(Price, "values")[0])
   #       sub.config(text=sum1)
 
@@ -3044,7 +3371,7 @@ def convertinv():
   global convert
   convert=messagebox.askyesno("Make invoice from Orders", "Are you sure to make invoice from this Orders ")
   if convert == True:
-    convertid = ordtree.item(ordtree.focus())["values"][1]
+    convertid = invotree.item(invotree.focus())["values"][1]
     # print (convertid)
     # sql = 'INSERT INTO invoice WHERE invoiceid=%s'
     
@@ -3069,45 +3396,20 @@ def convertinv():
       messagebox.destroy()
   
 
-#delete orders  
-# def dele():  
-#   messagebox.askyesno("Delete order", "Are you sure to delete this order? All products will be placed back into stock")
 
 #delete orders  
-def dele():
-  delmess = messagebox.askyesno("Delete Order", "Are you sure to delete this Order?")
+def deleteinvo():
+  delmess = messagebox.askyesno("Delete invoice", "Are you sure to delete this Order?")
   if delmess == True:
-    itemid = ordtree.item(ordtree.focus())["values"][1]
+    itemid = invotree.item(invotree.focus())["values"][1]
     print(itemid,)
-    sql = 'DELETE FROM Orders WHERE orderid=%s'
+    sql = 'DELETE FROM invoice WHERE invoiceid=%s'
     val = (itemid,)
     fbcursor.execute(sql, val)
     fbilldb.commit()
-    ordtree.delete(ordtree.selection()[0])
+    invotree.delete(invotree.selection()[0])
   else:
     pass
-
-# #delete p/s in view/edit  
-# def dele():
-#   delmess = messagebox.askyesno("Delete Productservice", "Are you sure to delete this Productservice?")
-#   if delmess == True:
-#     itemid = prstree.item(prstree.focus())["values"][1]
-#     print(itemid,)
-#     # sql = 'DELETE FROM Productservice WHERE Productserviceid=%s'
-#     val = (itemid,)
-#     fbcursor.execute(val)
-#     fbilldb.commit()
-#     prstree.delete(prstree.selection()[0])
-#   else:
-#     pass
-
-
-# def orderto():
-#     sql = 'SELECT businessname FROM Customer'
-#     Ordto=fbcursor.execute(sql,)
-#     print(Ordto)
-#     fbilldb.commit()
-#     return(Ordto)
 
 
 
@@ -3117,6 +3419,8 @@ def search():
     top = Toplevel()     
     top.title("Find Text")   
     top.geometry("600x250+390+250")
+
+    global findwhat
     findwhat1=Label(top,text="Find What:",pady=5,padx=10).place(x=5,y=20)
     n = StringVar()
     findwhat = ttk.Combobox(top, width = 40, textvariable = n ).place(x=90,y=25)
@@ -3128,7 +3432,7 @@ def search():
     findIN.place(x=90,y=54)
     findIN.current(0)
 
-    findButton = Button(top, text ="Find next",width=10).place(x=480,y=22)
+    findButton = Button(top, text ="Find next",width=10,command='search_records').place(x=480,y=22)
     closeButton = Button(top,text ="Close",width=10).place(x=480,y=52)
     
     match1=Label(top,text="Match:",pady=5,padx=10).place(x=5,y=74)
@@ -3151,7 +3455,14 @@ def search():
     Button5 = Checkbutton(top,variable = checkvarStatus5,text="Match Format",onvalue =0 ,offvalue = 1,height=3,width = 15)
     Button5.place(x=300,y=141)
 
-
+def search_records():
+  query = findwhat.get()
+  selections = []
+  for child in invotree.get_children():
+      if query in invotree.item(child)['values']:
+          print(invotree.item(child)['values'])
+          selections.append(child)
+  invotree.selection_set(selections)
 
 
 
@@ -3172,7 +3483,7 @@ invoiceLabel.pack(side="left", pady=3, ipadx=4)
 orderLabel = Button(midFrame,compound="top", text="View/Edit\nInvoice",relief=RAISED, image=photo1,bg="#f8f8f2", fg="black", height=55, bd=1, width=55,command=edit)
 orderLabel.pack(side="left")
 
-estimateLabel = Button(midFrame,compound="top", text="Delete\nSelected",relief=RAISED, image=photo2,bg="#f8f8f2", fg="black", height=55, bd=1, width=55,command=dele)
+estimateLabel = Button(midFrame,compound="top", text="Delete\nSelected",relief=RAISED, image=photo2,bg="#f8f8f2", fg="black", height=55, bd=1, width=55,command=deleteinvo)
 estimateLabel.pack(side="left")
 
 # w = Canvas(midFrame, width=1, height=65, bg="#b3b3b3", bd=0)
@@ -3211,12 +3522,31 @@ lbl_invdt = Label(lbframe, text="Invoice date from : ", bg="#f8f8f2")
 lbl_invdt.grid(row=0, column=0, pady=5, padx=(5, 0))
 lbl_invdtt = Label(lbframe, text="Invoice date to  :  ", bg="#f8f8f2")
 lbl_invdtt.grid(row=1, column=0, pady=5, padx=(5, 0))
+
+
+def date_range(): # Start and stop dates for range
+  var1=invdt.get_date().strftime('%y/%m/%d')
+  var2=invdtt.get_date().strftime('%y/%m/%d')
+  for record in invotree.get_children():
+    invotree.delete(record)
+
+  sqldate='SELECT * FROM invoice WHERE invodate BETWEEN %s AND %s'
+  valuz=(var1,var2,)
+  fbcursor.execute(sqldate,valuz)
+  filterdate=fbcursor.fetchall()
+  countp = 0
+  for i in filterdate:
+    invotree.insert(parent='', index='end', iid=i, text='', values=('',i[0], i[2], i[3], i[18], i[4], i[5], i[6], i[7], i[8], i[9], i[10]))
+  countp += 1
+
+
+
 invdt = DateEntry(lbframe, width=15)
 invdt.grid(row=0, column=1)
 invdtt = DateEntry(lbframe, width=15)
 invdtt.grid(row=1, column=1)
 checkvar1 = IntVar()
-chkbtn1 = Checkbutton(lbframe, text = "Apply filter", variable = checkvar1, onvalue = 1, offvalue = 0, height = 2, width = 8, bg="#f8f8f2")
+chkbtn1 = Checkbutton(lbframe, text = "Apply filter", variable = checkvar1, onvalue = 1, offvalue = 0, height = 2, width = 8, bg="#f8f8f2", command=date_range)
 chkbtn1.grid(row=0, column=2, rowspan=2, padx=(5,5))
 
 productLabel = Button(midFrame,compound="top", text="Refresh\nInvoice list",relief=RAISED, image=photo8,fg="black", height=55, bd=1, width=55)
@@ -3263,40 +3593,56 @@ s = ttk.Style()
 s.configure('Treeview.Heading', background='white', foreground='dark blue', State='DISABLE')
 
 
-ordtree=ttk.Treeview(tab1,selectmode='browse')
-ordtree.pack(side = 'top')
-ordtree["columns"]=("1","2","3","4","5","6","7","8","9","10","11","12")
-ordtree["show"]='headings'
-ordtree["height"]='15'
-ordtree.heading("2", text="Invoice#")
-ordtree.heading("3", text="Invoice date")
-ordtree.heading("4", text="Due date")
-ordtree.heading("5", text="Customer Name")
-ordtree.heading("6", text="Status")
-ordtree.heading("7", text="Emailed on")
-ordtree.heading("8", text="Printed on")
-ordtree.heading("9", text="SMS on")
-ordtree.heading("10", text="Invoice Total")
-ordtree.heading("11", text="Total Paid")
-ordtree.heading("12", text="Balance")
-ordtree.column("1", width = 35)
-ordtree.column("2", width = 130)
-ordtree.column("3", width = 110)
-ordtree.column("4", width = 110)
-ordtree.column("5", width = 180)
-ordtree.column("6", width = 110)
-ordtree.column("7", width = 130)
-ordtree.column("8", width = 110)
-ordtree.column("9", width = 110)
-ordtree.column("10", width = 110)
-ordtree.column("11", width = 110)
-ordtree.column("12", width = 100)
+invotree=ttk.Treeview(tab1,selectmode='browse')
+invotree.pack(side = 'top')
+invotree["columns"]=("1","2","3","4","5","6","7","8","9","10","11","12")
+invotree["show"]='headings'
+invotree["height"]='15'
+invotree.heading("2", text="Invoice#")
+invotree.heading("3", text="Invoice date")
+invotree.heading("4", text="Due date")
+invotree.heading("5", text="Customer Name")
+invotree.heading("6", text="Status")
+invotree.heading("7", text="Emailed on")
+invotree.heading("8", text="Printed on")
+invotree.heading("9", text="SMS on")
+invotree.heading("10", text="Invoice Total")
+invotree.heading("11", text="Total Paid")
+invotree.heading("12", text="Balance")
+invotree.column("1", width = 35)
+invotree.column("2", width = 130)
+invotree.column("3", width = 110)
+invotree.column("4", width = 110)
+invotree.column("5", width = 180)
+invotree.column("6", width = 110)
+invotree.column("7", width = 130)
+invotree.column("8", width = 110)
+invotree.column("9", width = 110)
+invotree.column("10", width = 110)
+invotree.column("11", width = 110)
+invotree.column("12", width = 100)
 
-# ordtree.bind('<Enter>', lambda event :item_selected1())
+def prdpicker(event):
+
+        selected = invotree.focus()
+        selected_prdct= invotree.item(selected)["values"][1]
+        for record in prstree.get_children():
+         prstree.delete(record)
+        sqlprdct='SELECT * FROM storingproduct WHERE invoiceid=%s'
+        valprdct=(selected_prdct,)
+        fbcursor.execute(sqlprdct,valprdct)
+        prdctsltn=fbcursor.fetchall()
+        j = 0
+        for i in prdctsltn:
+         prstree.insert(parent='', index='end', iid=i, text='', values=(' ',i[1], i[8], i[9],(i[11]*i[13]),i[13], i[14],((i[11]*i[13])*i[13])))
+        j += 1
+invotree.bind('<Double-Button-1>' , prdpicker)
+
+# invotree.bind('<Enter>', lambda event :item_selected1())
 # def item_selected1(event):
-#         selected = ordtree.focus()
+#         selected = invotree.focus()
 #         global valuep
-#         valuep= ordtree.item(selected)["values"][0]
+#         valuep= invotree.item(selected)["values"][0]
 #         print(valuep)
 #         # messagebox.showinfo("",valuep)
 
@@ -3312,7 +3658,7 @@ ordtree.column("12", width = 100)
 fbcursor.execute('SELECT * FROM invoice')
 j = 0
 for i in fbcursor:
-  ordtree.insert(parent='', index='end', iid=i, text='hello', values=(i[0], i[1], i[3], i[4], i[2], i[5], i[6], i[7], i[8], i[9], i[10], i[11]))
+  invotree.insert(parent='', index='end', iid=i, text='hello', values=('',i[0], i[2], i[3], i[18], i[4], i[5], i[6], i[7], i[8], i[9], i[10]))
   j += 1
 
 
@@ -3457,5 +3803,5 @@ def savesettings():
    messagebox.showinfo("F-Billing Revolution 2022", "Your E-mail configuration settings has been saved.")
 
 
-root.mainloop()
 
+root.mainloop()
